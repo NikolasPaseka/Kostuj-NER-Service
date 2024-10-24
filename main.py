@@ -54,6 +54,17 @@ async def extract_entities(request: SentenceRequest):
        # Initialize an empty response object
     responseObject = EntityResponse()
     
+    color_switch = {
+        "červená": "red",
+        "červené": "red",
+        "bílá": "white",
+        "bílé": "white",
+        "růžová": "rose",
+        "růžové": "rose",
+        "rose": "rose",
+        "rosé": "rose",
+    }
+
     # Extract entities and assign them to the corresponding fields
     for ent in doc.ents:
         if ent.label_ == "VINAŘSTVÍ":
@@ -63,7 +74,7 @@ async def extract_entities(request: SentenceRequest):
         elif ent.label_ == "ROČNÍK":
             responseObject.year = ent.text
         elif ent.label_ == "BARVA":
-            responseObject.color = ent.text
+            responseObject.color = color_switch.get(ent.text.lower(), ent.text)
         elif ent.label_ == "HODNOCENÍ":
             responseObject.rating = ent.text
     
