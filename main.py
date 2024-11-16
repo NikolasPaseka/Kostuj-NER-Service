@@ -28,6 +28,8 @@ class EntityResponse(BaseModel):
     year: str = None
     color: str = None
     rating: str = None
+    ratingCommission: str = None
+    resultSweetness: str = None
 
 class WineryResponse(BaseModel):
     name: str = None
@@ -44,7 +46,7 @@ async def root():
 @app.post("/ner/")
 async def extract_entities(request: SentenceRequest):
     # Process the sentence using the SpaCy model
-    doc = nlp_wine(request.sentence)
+    doc = nlp_wine(request.sentence.lower())
     
     # Extract entities and their labels
     # entities = []
@@ -64,6 +66,12 @@ async def extract_entities(request: SentenceRequest):
         "rose": "rose",
         "rosé": "rose",
     }
+    result_sweetness_switch = {
+        "suché": "dry",
+        "polosuché": "off-dry",
+        "polosladké": "semi-sweet",
+        "sladké": "sweet",
+    }
 
     # Extract entities and assign them to the corresponding fields
     for ent in doc.ents:
@@ -77,6 +85,10 @@ async def extract_entities(request: SentenceRequest):
             responseObject.color = color_switch.get(ent.text.lower(), ent.text)
         elif ent.label_ == "HODNOCENÍ":
             responseObject.rating = ent.text
+        elif ent.label_ == "KOMISE":
+            responseObject.ratingCommission = ent.text
+        elif ent.label_ == "SLADKOST":
+            responseObject.resultSweetness = result_sweetness_switch.get(ent.text.lower(), ent.text)
     
     # Return the extracted entities
     #return {"sentence": request.sentence, "entities": entities}
