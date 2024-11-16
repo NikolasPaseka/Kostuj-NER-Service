@@ -88,7 +88,7 @@ async def extract_entities(request: SentenceRequest):
         elif ent.label_ == "KOMISE":
             responseObject.ratingCommission = ent.text
         elif ent.label_ == "SLADKOST":
-            responseObject.resultSweetness = result_sweetness_switch.get(ent.text.lower(), ent.text)
+            responseObject.resultSweetness = result_sweetness_switch.get(ent.text.lower(), None)
     
     # Return the extracted entities
     #return {"sentence": request.sentence, "entities": entities}
